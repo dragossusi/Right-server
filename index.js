@@ -9,6 +9,7 @@ http.listen(3000, function(){
 
 io.on('connection', function(socket){
 	console.log("Player Connected!");
+	players.push(player(socket.id,"asd",0,0));
 	socket.emit('socket_id',{id: socket.id});
 	socket.emit('get_players', players);
 	socket.on('player_moved', function(data) {
@@ -34,6 +35,8 @@ io.on('connection', function(socket){
 });
 
 function player(id,nume,x,y) {
+	this.id = id;
+	this.nume = nume;
 	this.x = x;
 	this.y = y;
 };
