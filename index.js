@@ -1,7 +1,8 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var players = [];
+var HashMap = require('hashmap');
+var players = new HashMap();
 
 http.listen(3000, function(){
   console.log('listening on *:3000');
@@ -9,32 +10,26 @@ http.listen(3000, function(){
 
 io.on('connection', function(socket){
 	console.log("Player Connected!");
-	players.push(player(socket.id,"asd",0,0));
 	socket.emit('socket_id',{id: socket.id});
-	socket.emit('get_players', players);
+	socket.emit('get_players', players.values());
 	socket.on('player_moved', function(data) {
-        data.id = socket.id;
-        console.log(`${data.x} ${data.y}`);
-        for(var i = 0; i < players.length; ++i) {
-            if(players[i].id == data.id) {
-                players[i].x = data.x;
-                players[i].y = data.y;
-            }
-        }
+		const id = data.id;
+        players.get(id).x = data.x;
+        players.get(id).y = data.y;
         socket.broadcast.emit('player_moved', data);
     });
 	socket.on('disconnect', function(){
 		console.log("Player Disconnected");
 		socket.broadcast.emit('player_disconnected', { id: socket.id });
-		for(var i = 0; i < players.length; i++){
-			if(players[i].id == socket.id){
-				players.splice(i, 1);
-			}
-        }
+		players.delete(socket.id);
 	});
+	var player = new Player(socket.id,"asd",0,0)
+	console.log(player.toString() + " added");
+    socket.broadcast.emit('new_player', player);
+    players.set(socket.id,player);
 });
 
-function player(id,nume,x,y) {
+function Player(id,nume,x,y) {
 	this.id = id;
 	this.nume = nume;
 	this.x = x;
@@ -54,6 +49,8 @@ stdin.addListener("data", function(d) {
         d.toString().trim() + "]");
     if(d.toString().trim() === "stop")
     	process.exit();
+    if(d.toString().trim() === "players")
+    	console.log(players);
   });
 
 app.get('/', function(req, res){
