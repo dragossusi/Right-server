@@ -16,6 +16,8 @@ io.on('connection', function(socket){
 		const id = data.id;
         players.get(id).x = data.x;
         players.get(id).y = data.y;
+        players.get(id).dirX = data.dirX;
+        players.get(id).dirY = data.dirY;
         socket.broadcast.emit('player_moved', data);
     });
 	socket.on('disconnect', function(){
@@ -23,17 +25,19 @@ io.on('connection', function(socket){
 		socket.broadcast.emit('player_disconnected', { id: socket.id });
 		players.delete(socket.id);
 	});
-	var player = new Player(socket.id,"asd",0,0)
+	var player = new Player(socket.id,"asd",0,0,0,0)
 	console.log(player.toString() + " added");
     socket.broadcast.emit('new_player', player);
     players.set(socket.id,player);
 });
 
-function Player(id,nume,x,y) {
+function Player(id,nume,x,y,dirX,dirY) {
 	this.id = id;
 	this.nume = nume;
 	this.x = x;
 	this.y = y;
+	this.dirX = dirX;
+	this.dirY = dirY;
 };
 
 
