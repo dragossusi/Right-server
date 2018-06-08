@@ -31,6 +31,9 @@ io.on('connection', function(socket){
     players.set(socket.id,player);
 });
 
+//am aici un obiect de jucator cu id nume, pozitie, directie(nume nefolosit deocamdata)
+// dar gen, ai avut toate ideile? sau te ai mai inspirat de pe net
+// pai astea sunt chestii basic, am avut ideile in minte si am cautat
 function Player(id,nume,x,y,dirX,dirY) {
 	this.id = id;
 	this.nume = nume;
@@ -41,7 +44,7 @@ function Player(id,nume,x,y,dirX,dirY) {
 };
 
 
-
+///de aici e random pentru oprit din consola si pt site
 
 var stdin = process.openStdin();
 
